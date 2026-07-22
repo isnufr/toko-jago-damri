@@ -32,4 +32,4 @@ ENV DATABASE_PATH=/app/data/toko_jago_damri.db
 EXPOSE 8000
 
 # Menjalankan script seeder terlebih dahulu untuk setup database, lalu jalankan aplikasi dengan Gunicorn
-CMD bash -c "python seed.py && gunicorn -w 4 -b 0.0.0.0:8000 app:app"
+CMD bash -c "python seed.py && gunicorn -w 4 -b 0.0.0.0:${PORT:-8000} app:app"
