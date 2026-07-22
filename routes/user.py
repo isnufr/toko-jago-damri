@@ -6,12 +6,14 @@ from database import db
 
 user_bp = Blueprint('user', __name__)
 
+from functools import wraps
+
 def owner_required(f):
+    @wraps(f)
     def wrapper(*args, **kwargs):
         if current_user.role != 'owner':
             abort(403)
         return f(*args, **kwargs)
-    wrapper.__name__ = f.__name__
     return wrapper
 
 @user_bp.route('/users')
