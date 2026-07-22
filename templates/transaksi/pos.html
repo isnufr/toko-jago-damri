@@ -14,9 +14,11 @@
                 </div>
                 <input type="text" x-model="searchQuery" class="block w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-lg leading-5 bg-gray-50 placeholder-gray-500 focus:outline-none focus:bg-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500 sm:text-sm" placeholder="Scan barcode atau cari nama barang..." autofocus>
             </div>
-            <div class="flex gap-2">
-                <button class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-200 transition-colors">Semua</button>
-                <button class="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors">Sembako</button>
+            <div class="flex gap-2 overflow-x-auto pb-1 hide-scrollbar">
+                <button @click="selectedCategory = ''" :class="selectedCategory === '' ? 'bg-primary-50 text-primary-700 border-primary-300' : 'bg-gray-100 text-gray-700 border-transparent'" class="px-4 py-2 border rounded-lg text-sm font-medium whitespace-nowrap transition-colors">Semua</button>
+                {% for kat in kategori_list %}
+                <button @click="selectedCategory = {{ kat.id }}" :class="selectedCategory === {{ kat.id }} ? 'bg-primary-50 text-primary-700 border-primary-300' : 'bg-white border-gray-300 text-gray-700'" class="px-4 py-2 border rounded-lg text-sm font-medium whitespace-nowrap transition-colors">{{ kat.nama }}</button>
+                {% endfor %}
             </div>
         </div>
 
@@ -143,6 +145,7 @@
     document.addEventListener('alpine:init', () => {
         Alpine.data('posSystem', () => ({
             searchQuery: '',
+            selectedCategory: '',
             cart: [],
             payment: '',
             products: [],
@@ -158,14 +161,20 @@
             },
 
             get filteredProducts() {
-                if (this.searchQuery === '') {
-                    return this.products;
+                let filtered = this.products;
+                
+                if (this.selectedCategory !== '') {
+                    filtered = filtered.filter(p => p.kategori_id === this.selectedCategory);
                 }
-                const lowerCaseQuery = this.searchQuery.toLowerCase();
-                return this.products.filter(p => 
-                    p.name.toLowerCase().includes(lowerCaseQuery) || 
-                    p.sku.toLowerCase().includes(lowerCaseQuery)
-                );
+                
+                if (this.searchQuery !== '') {
+                    const lowerCaseQuery = this.searchQuery.toLowerCase();
+                    filtered = filtered.filter(p => 
+                        p.name.toLowerCase().includes(lowerCaseQuery) || 
+                        p.sku.toLowerCase().includes(lowerCaseQuery)
+                    );
+                }
+                return filtered;
             },
 
             get subtotal() {
