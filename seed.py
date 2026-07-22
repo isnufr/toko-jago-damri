@@ -9,8 +9,8 @@ def seed_data():
         print("Memeriksa struktur database...")
         db.create_all()
 
-        # Cek apakah sudah ada admin, jika belum baru jalankan seeder
-        if User.query.filter_by(username='admin').first():
+        # Cek apakah sudah ada user (admin/kasir) di database, jika ada berarti sudah pernah disetup
+        if User.query.first():
             print("Database sudah berisi data pengguna, melewati proses reset awal.")
             return
 
