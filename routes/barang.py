@@ -8,8 +8,22 @@ barang_bp = Blueprint('barang', __name__)
 @barang_bp.route('/barang')
 @login_required
 def index():
-    semua_barang = Barang.query.all()
-    return render_template('barang/index.html', list_barang=semua_barang)
+    q = request.args.get('q', '')
+    kat_id = request.args.get('kategori', '')
+    page = request.args.get('page', 1, type=int)
+
+    query = Barang.query
+    if q:
+        query = query.filter((Barang.nama.ilike(f'%{q}%')) | (Barang.kode.ilike(f'%{q}%')))
+    if kat_id:
+        query = query.filter(Barang.kategori_id == kat_id)
+        
+    query = query.order_by(Barang.nama.asc())
+    pagination = query.paginate(page=page, per_page=10, error_out=False)
+    
+    kategori_list = Kategori.query.all()
+    
+    return render_template('barang/index.html', pagination=pagination, q=q, kat_id=kat_id, kategori_list=kategori_list)
 
 @barang_bp.route('/barang/tambah', methods=['GET', 'POST'])
 @login_required

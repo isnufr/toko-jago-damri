@@ -190,10 +190,23 @@
             },
 
             clearCart() {
-                if (confirm('Kosongkan keranjang belanja?')) {
-                    this.cart = [];
-                    this.payment = '';
-                }
+                if (this.cart.length === 0) return;
+                
+                Swal.fire({
+                    title: 'Kosongkan Keranjang?',
+                    text: 'Semua barang yang sudah di-scan akan dihapus.',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#ef4444',
+                    cancelButtonColor: '#6b7280',
+                    confirmButtonText: 'Ya, kosongkan!',
+                    cancelButtonText: 'Batal'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        this.cart = [];
+                        this.payment = '';
+                    }
+                });
             },
 
             addPayment(amount) {
@@ -228,16 +241,31 @@
                     const result = await response.json();
 
                     if (result.success) {
-                        alert(`Transaksi Berhasil!\nNo Invoice: ${result.invoice}\nKembalian: ${this.formatCurrency(this.change)}`);
+                        Swal.fire({
+                            title: 'Transaksi Berhasil!',
+                            html: `No Invoice: <b>${result.invoice}</b><br>Kembalian: <b>${this.formatCurrency(this.change)}</b>`,
+                            icon: 'success',
+                            confirmButtonColor: '#f97316'
+                        });
                         this.cart = [];
                         this.payment = '';
                         this.init(); // Refresh data produk (stok berkurang)
                     } else {
-                        alert('Gagal: ' + result.message);
+                        Swal.fire({
+                            title: 'Gagal',
+                            text: result.message,
+                            icon: 'error',
+                            confirmButtonColor: '#f97316'
+                        });
                     }
                 } catch (error) {
                     console.error('Error saat checkout:', error);
-                    alert('Terjadi kesalahan sistem saat memproses transaksi.');
+                    Swal.fire({
+                        title: 'Kesalahan Sistem',
+                        text: 'Terjadi kesalahan sistem saat memproses transaksi.',
+                        icon: 'error',
+                        confirmButtonColor: '#f97316'
+                    });
                 }
             },
 

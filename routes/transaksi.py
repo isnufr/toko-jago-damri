@@ -93,3 +93,22 @@ def riwayat():
 def riwayat_detail(id):
     transaksi = Transaksi.query.get_or_404(id)
     return render_template('transaksi/detail.html', transaksi=transaksi)
+
+from flask import flash, redirect, url_for
+
+@transaksi_bp.route('/riwayat/hapus/<int:id>', methods=['POST'])
+@login_required
+def hapus_transaksi(id):
+    transaksi = Transaksi.query.get_or_404(id)
+    
+    # Kembalikan stok barang
+    for detail in transaksi.details:
+        if detail.barang:
+            detail.barang.stok += detail.qty
+        db.session.delete(detail)
+        
+    db.session.delete(transaksi)
+    db.session.commit()
+    
+    flash('Transaksi berhasil dihapus dan stok barang telah dikembalikan.', 'success')
+    return redirect(url_for('transaksi.riwayat'))

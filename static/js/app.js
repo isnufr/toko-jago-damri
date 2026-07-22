@@ -14,3 +14,23 @@ document.addEventListener('alpine:init', () => {
         }
     }));
 });
+
+// Global SweetAlert Delete Confirmation
+window.confirmDelete = function(event, form, title, text) {
+    event.preventDefault();
+    Swal.fire({
+        title: title || 'Apakah Anda yakin?',
+        text: text || 'Data yang dihapus tidak dapat dikembalikan!',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#ef4444',
+        cancelButtonColor: '#6b7280',
+        confirmButtonText: 'Ya, Hapus!',
+        cancelButtonText: 'Batal',
+        reverseButtons: true
+    }).then((result) => {
+        if (result.isConfirmed) {
+            form.submit();
+        }
+    });
+};

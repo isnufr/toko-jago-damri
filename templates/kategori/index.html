@@ -74,7 +74,7 @@
                                 </span>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                <form action="{{ url_for('kategori.hapus', id=kat.id) }}" method="POST" class="inline" onsubmit="return confirm('Apakah Anda yakin ingin menghapus kategori ini?');">
+                                <form action="{{ url_for('kategori.hapus', id=kat.id) }}" method="POST" class="inline" onsubmit="confirmDelete(event, this, 'Hapus Kategori?', 'Apakah Anda yakin ingin menghapus kategori ini?');">
                                     <button type="submit" class="text-red-600 hover:text-red-900" title="Hapus">
                                         <i data-lucide="trash-2" class="w-4 h-4"></i>
                                     </button>

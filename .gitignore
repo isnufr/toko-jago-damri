@@ -1,0 +1,8 @@
+__pycache__/
+*.pyc
+*.pyo
+venv/
+env/
+.env
+toko_jago_damri.db
+node_modules/

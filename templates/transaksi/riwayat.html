@@ -33,10 +33,15 @@
                     <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-primary-600 text-right">
                         Rp {{ "{:,.0f}".format(trx.total).replace(',', '.') }}
                     </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
+                    <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium flex justify-center items-center gap-2">
                         <a href="{{ url_for('transaksi.riwayat_detail', id=trx.id) }}" class="text-primary-600 hover:text-primary-900 font-medium bg-primary-50 px-3 py-1 rounded-md hover:bg-primary-100 transition-colors">
                             Lihat Detail
                         </a>
+                        <form action="{{ url_for('transaksi.hapus_transaksi', id=trx.id) }}" method="POST" class="inline m-0" onsubmit="confirmDelete(event, this, 'Hapus Transaksi?', 'Stok barang yang terjual pada transaksi ini akan dikembalikan otomatis ke dalam sistem.');">
+                            <button type="submit" class="text-red-600 hover:text-red-900 font-medium bg-red-50 px-3 py-1 rounded-md hover:bg-red-100 transition-colors">
+                                Hapus
+                            </button>
+                        </form>
                     </td>
                 </tr>
                 {% else %}

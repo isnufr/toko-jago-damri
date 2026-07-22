@@ -1,0 +1,285 @@
+{% extends "base.html" %}
+
+{% block title %}Cetak Label Harga - Toko Jago Damri{% endblock %}
+
+{% block content %}
+<div class="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 hide-on-print">
+    <div>
+        <h1 class="text-2xl font-bold text-gray-900">Cetak Label Harga</h1>
+        <p class="text-sm text-gray-500 mt-1">Pilih barang dan atur jumlah label yang ingin dicetak untuk dipasang di rak.</p>
+    </div>
+    <div class="flex gap-2">
+        <button onclick="window.print()" class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-primary-500 hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
+            <i data-lucide="printer" class="w-4 h-4 mr-2"></i>
+            Mulai Cetak
+        </button>
+    </div>
+</div>
+
+<div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hide-on-print" x-data="labelPrinter()">
+    <div class="p-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <!-- Bagian Kiri: Pilihan Barang -->
+            <div class="border-r md:pr-8 border-gray-200">
+                <h2 class="text-lg font-bold text-gray-900 mb-4">1. Pilih Barang</h2>
+                
+                <div class="mb-4 relative">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <i data-lucide="search" class="h-4 w-4 text-gray-400"></i>
+                    </div>
+                    <input type="text" x-model="search" class="block w-full pl-9 pr-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500" placeholder="Cari nama barang...">
+                </div>
+
+                <div class="max-h-96 overflow-y-auto space-y-2 pr-2">
+                    <template x-for="barang in filteredBarang" :key="barang.id">
+                        <div class="flex items-center justify-between p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer" @click="addLabel(barang)">
+                            <div>
+                                <div class="text-sm font-bold text-gray-900" x-text="barang.nama"></div>
+                                <div class="text-xs text-gray-500" x-text="barang.kode + ' - Rp ' + formatNumber(barang.harga_jual)"></div>
+                            </div>
+                            <button type="button" class="text-primary-600 hover:text-primary-700 bg-primary-50 p-1.5 rounded-md">
+                                <i data-lucide="plus" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+                    </template>
+                </div>
+            </div>
+
+            <!-- Bagian Kanan: Daftar Antrean Cetak -->
+            <div>
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-lg font-bold text-gray-900">2. Daftar Cetak</h2>
+                    <button @click="clearLabels()" class="text-sm text-red-500 hover:text-red-700 font-medium" x-show="selectedLabels.length > 0">Kosongkan</button>
+                </div>
+
+                <div x-show="selectedLabels.length === 0" class="text-center py-12 border-2 border-dashed border-gray-300 rounded-xl">
+                    <i data-lucide="tag" class="w-10 h-10 mx-auto text-gray-300 mb-2"></i>
+                    <p class="text-sm text-gray-500">Belum ada label yang dipilih</p>
+                </div>
+
+                <div class="space-y-3">
+                    <template x-for="(label, index) in selectedLabels" :key="index">
+                        <div class="flex items-center justify-between p-3 border border-gray-200 rounded-lg bg-gray-50">
+                            <div class="flex-1">
+                                <div class="text-sm font-bold text-gray-900" x-text="label.nama"></div>
+                                <div class="text-xs text-primary-600 font-medium mt-1">Rp <span x-text="formatNumber(label.harga_jual)"></span></div>
+                            </div>
+                            <div class="flex items-center gap-4">
+                                <div class="flex items-center border border-gray-300 rounded-md overflow-hidden bg-white">
+                                    <button @click="decreaseQty(index)" class="px-2 py-1 text-gray-500 hover:bg-gray-100">
+                                        <i data-lucide="minus" class="w-3 h-3"></i>
+                                    </button>
+                                    <span class="w-8 text-center text-sm font-medium" x-text="label.qty"></span>
+                                    <button @click="increaseQty(index)" class="px-2 py-1 text-gray-500 hover:bg-gray-100">
+                                        <i data-lucide="plus" class="w-3 h-3"></i>
+                                    </button>
+                                </div>
+                                <button @click="removeLabel(index)" class="text-red-400 hover:text-red-600">
+                                    <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Preview & Print Area -->
+<div id="print-container">
+    <div class="label-grid">
+        <template x-data="labelPrinter()" x-for="label in getPrintableArray()" :key="Math.random()">
+            <div class="label-box">
+                <div class="store-name">TOKO JAGO DAMRI</div>
+                <div class="product-name" x-text="label.nama"></div>
+                <div class="product-sku" x-text="label.kode"></div>
+                <div class="product-price">Rp <span x-text="formatNumber(label.harga_jual)"></span></div>
+            </div>
+        </template>
+    </div>
+</div>
+
+<style>
+/* Sembunyikan print area di tampilan normal */
+#print-container {
+    display: none;
+}
+
+/* Styling untuk Print */
+@media print {
+    /* Sembunyikan UI utama */
+    body * {
+        visibility: hidden;
+    }
+    .hide-on-print {
+        display: none !important;
+    }
+
+    #print-container, #print-container * {
+        visibility: visible;
+    }
+
+    #print-container {
+        display: block;
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        margin: 0;
+        padding: 0;
+    }
+
+    /* Grid Layout untuk Kertas A4 (Label Barcode Standard) */
+    @page {
+        margin: 1cm;
+        size: A4 portrait;
+    }
+
+    .label-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr); /* 4 kolom per baris */
+        gap: 10px;
+        width: 100%;
+    }
+
+    .label-box {
+        border: 1px dashed #000;
+        padding: 10px;
+        text-align: center;
+        height: 120px; /* Tinggi konstan untuk label */
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        box-sizing: border-box;
+    }
+
+    .store-name {
+        font-size: 10px;
+        font-weight: bold;
+        text-transform: uppercase;
+        border-bottom: 1px solid #000;
+        padding-bottom: 2px;
+        margin-bottom: 5px;
+    }
+
+    .product-name {
+        font-size: 12px;
+        font-weight: bold;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+    }
+
+    .product-sku {
+        font-size: 10px;
+        color: #333;
+        margin: 2px 0;
+    }
+
+    .product-price {
+        font-size: 16px;
+        font-weight: bold;
+        margin-top: auto;
+    }
+}
+</style>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('alpine:init', () => {
+        Alpine.data('labelPrinter', () => ({
+            search: '',
+            // Inisialisasi daftar barang dari server (jinja template to js)
+            allBarang: [
+                {% for b in barang_list %}
+                {
+                    id: {{ b.id }},
+                    kode: '{{ b.kode }}',
+                    nama: '{{ b.nama | replace("'", "\\'") }}',
+                    harga_jual: {{ b.harga_jual }}
+                },
+                {% endfor %}
+            ],
+            
+            // State local storage fallback
+            selectedLabels: [],
+
+            init() {
+                // Initialize alpine components
+                if(window.labelState) {
+                    this.selectedLabels = window.labelState;
+                } else {
+                    window.labelState = this.selectedLabels;
+                }
+                
+                this.$watch('selectedLabels', value => {
+                    window.labelState = value;
+                });
+            },
+
+            get filteredBarang() {
+                if (this.search === '') return this.allBarang;
+                const lowerCaseSearch = this.search.toLowerCase();
+                return this.allBarang.filter(b => 
+                    b.nama.toLowerCase().includes(lowerCaseSearch) || 
+                    b.kode.toLowerCase().includes(lowerCaseSearch)
+                );
+            },
+
+            addLabel(barang) {
+                const existing = this.selectedLabels.find(l => l.id === barang.id);
+                if (existing) {
+                    existing.qty++;
+                } else {
+                    this.selectedLabels.push({
+                        ...barang,
+                        qty: 1
+                    });
+                }
+            },
+
+            increaseQty(index) {
+                this.selectedLabels[index].qty++;
+            },
+
+            decreaseQty(index) {
+                if (this.selectedLabels[index].qty > 1) {
+                    this.selectedLabels[index].qty--;
+                } else {
+                    this.removeLabel(index);
+                }
+            },
+
+            removeLabel(index) {
+                this.selectedLabels.splice(index, 1);
+            },
+
+            clearLabels() {
+                this.selectedLabels = [];
+            },
+
+            getPrintableArray() {
+                // Return an array representing the exact number of labels to print
+                const result = [];
+                // read from global window state to sync between UI alpine and Print alpine
+                const labels = window.labelState || [];
+                labels.forEach(label => {
+                    for(let i=0; i<label.qty; i++) {
+                        result.push(label);
+                    }
+                });
+                return result;
+            },
+
+            formatNumber(num) {
+                return new Intl.NumberFormat('id-ID').format(num);
+            }
+        }));
+    });
+</script>
+{% endblock %}
