@@ -70,7 +70,7 @@
     <div :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'" class="fixed inset-y-0 left-0 z-50 w-64 bg-white border-r border-gray-200 transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-auto lg:flex lg:w-64 lg:flex-col">
         <div class="flex h-16 shrink-0 items-center px-6 border-b border-gray-200">
             <span class="text-xl font-bold text-gray-900 tracking-tight flex items-center gap-2">
-                <i data-lucide="store" class="text-primary-500 w-6 h-6"></i>
+                <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo" class="w-8 h-8 object-contain">
                 Jago Damri
             </span>
         </div>
@@ -150,7 +150,8 @@
                 <i data-lucide="menu" class="h-6 w-6"></i>
             </button>
             <div class="flex flex-1 justify-between px-4 sm:px-6 lg:px-8">
-                <div class="flex flex-1 items-center">
+                <div class="flex flex-1 items-center gap-2">
+                    <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo" class="w-6 h-6 object-contain">
                     <span class="text-lg font-bold text-gray-900 tracking-tight">Toko Jago Damri</span>
                 </div>
             </div>
