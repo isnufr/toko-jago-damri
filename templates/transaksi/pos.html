@@ -263,12 +263,21 @@
                             title: 'Transaksi Berhasil!',
                             html: `No Invoice: <b>${result.invoice}</b><br>Kembalian: <b>${this.formatCurrency(this.change)}</b>`,
                             icon: 'success',
-                            confirmButtonColor: '#f97316'
+                            showCancelButton: true,
+                            confirmButtonColor: '#f97316',
+                            cancelButtonColor: '#6b7280',
+                            confirmButtonText: 'Cetak Struk',
+                            cancelButtonText: 'Tutup'
+                        }).then((swalResult) => {
+                            if (swalResult.isConfirmed) {
+                                // Buka tab baru untuk cetak struk
+                                window.open(`/riwayat/${result.transaksi_id}?print=1`, '_blank');
+                            }
+                            this.cart = [];
+                            this.payment = '';
+                            this.cartOpen = false;
+                            this.init(); // Refresh data produk (stok berkurang)
                         });
-                        this.cart = [];
-                        this.payment = '';
-                        this.cartOpen = false;
-                        this.init(); // Refresh data produk (stok berkurang)
                     } else {
                         Swal.fire({
                             title: 'Gagal',

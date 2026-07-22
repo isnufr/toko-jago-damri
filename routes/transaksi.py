@@ -78,7 +78,8 @@ def checkout():
     return jsonify({
         'success': True,
         'message': 'Transaksi berhasil disimpan',
-        'invoice': invoice_no
+        'invoice': invoice_no,
+        'transaksi_id': transaksi.id
     })
 
 @transaksi_bp.route('/riwayat')
