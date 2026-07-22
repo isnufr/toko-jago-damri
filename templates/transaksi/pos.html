@@ -12,7 +12,7 @@
                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                     <i data-lucide="search" class="h-5 w-5 text-gray-400"></i>
                 </div>
-                <input type="text" x-model="searchQuery" class="block w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-lg leading-5 bg-gray-50 placeholder-gray-500 focus:outline-none focus:bg-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500 sm:text-sm" placeholder="Scan barcode atau cari nama barang..." autofocus>
+                <input type="text" x-model="searchQuery" @keyup.enter="handleBarcodeScan" class="block w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-lg leading-5 bg-gray-50 placeholder-gray-500 focus:outline-none focus:bg-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500 sm:text-sm" placeholder="Scan barcode atau cari nama barang..." autofocus>
             </div>
             <div class="flex gap-2 overflow-x-auto pb-1 hide-scrollbar">
                 <button @click="selectedCategory = ''" :class="selectedCategory === '' ? 'bg-primary-50 text-primary-700 border-primary-300' : 'bg-gray-100 text-gray-700 border-transparent'" class="px-4 py-2 border rounded-lg text-sm font-medium whitespace-nowrap transition-colors">Semua</button>
@@ -202,6 +202,24 @@
                 }
                 // Reset search after add
                 this.searchQuery = '';
+            },
+
+            handleBarcodeScan() {
+                if (this.searchQuery.trim() === '') return;
+                
+                const query = this.searchQuery.trim().toLowerCase();
+                
+                // 1. Cari exact match berdasarkan SKU (Barcode)
+                let match = this.products.find(p => p.sku.toLowerCase() === query);
+                
+                // 2. Jika tidak ada exact match barcode, cek apakah hasil filter hanya menghasilkan 1 barang unik
+                if (!match && this.filteredProducts.length === 1) {
+                    match = this.filteredProducts[0];
+                }
+
+                if (match) {
+                    this.addToCart(match);
+                }
             },
 
             increaseQty(index) {
