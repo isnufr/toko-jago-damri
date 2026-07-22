@@ -31,6 +31,5 @@ ENV DATABASE_PATH=/app/data/toko_jago_damri.db
 # Membuka port yang akan digunakan oleh aplikasi
 EXPOSE 8000
 
-# Menjalankan aplikasi menggunakan Gunicorn untuk lingkungan produksi
-# 4 workers dan listen di port 8000
-CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:8000", "app:app"]
+# Menjalankan script seeder terlebih dahulu untuk setup database, lalu jalankan aplikasi dengan Gunicorn
+CMD bash -c "python seed.py && gunicorn -w 4 -b 0.0.0.0:8000 app:app"
