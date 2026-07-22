@@ -32,6 +32,9 @@
     
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body class="h-full flex items-center justify-center text-gray-800 antialiased font-sans py-12 px-4 sm:px-6 lg:px-8 bg-gray-50">
     
@@ -50,18 +53,22 @@
 
         {% with messages = get_flashed_messages(with_categories=true) %}
           {% if messages %}
-            {% for category, message in messages %}
-            <div class="rounded-md bg-red-50 p-4 mt-4">
-              <div class="flex">
-                <div class="flex-shrink-0">
-                  <i data-lucide="alert-circle" class="h-5 w-5 text-red-400"></i>
-                </div>
-                <div class="ml-3">
-                  <h3 class="text-sm font-medium text-red-800">{{ message }}</h3>
-                </div>
-              </div>
-            </div>
-            {% endfor %}
+            <script>
+              document.addEventListener('DOMContentLoaded', function() {
+                {% for category, message in messages %}
+                  Swal.fire({
+                    icon: '{{ "success" if category == "success" else ("error" if category == "error" else "info") }}',
+                    title: '{{ "Berhasil" if category == "success" else "Pemberitahuan" }}',
+                    text: '{{ message }}',
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 3000,
+                    timerProgressBar: true
+                  });
+                {% endfor %}
+              });
+            </script>
           {% endif %}
         {% endwith %}
         
@@ -70,19 +77,19 @@
                 <div>
                     <label for="username" class="block text-sm font-medium text-gray-700 mb-1">Username</label>
                     <div class="relative">
-                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none z-10">
                             <i data-lucide="user" class="h-5 w-5 text-gray-400"></i>
                         </div>
-                        <input id="username" name="username" type="text" required class="appearance-none rounded-lg relative block w-full pl-10 px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-primary-500 focus:border-primary-500 focus:z-10 sm:text-sm transition-colors" placeholder="Masukkan username">
+                        <input id="username" name="username" type="text" required class="appearance-none rounded-lg relative block w-full pl-10 pr-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm transition-colors" placeholder="Masukkan username">
                     </div>
                 </div>
                 <div>
                     <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Password</label>
                     <div class="relative">
-                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none z-10">
                             <i data-lucide="lock" class="h-5 w-5 text-gray-400"></i>
                         </div>
-                        <input id="password" name="password" type="password" required class="appearance-none rounded-lg relative block w-full pl-10 px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-primary-500 focus:border-primary-500 focus:z-10 sm:text-sm transition-colors" placeholder="••••••••">
+                        <input id="password" name="password" type="password" required class="appearance-none rounded-lg relative block w-full pl-10 pr-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm transition-colors" placeholder="••••••••">
                     </div>
                 </div>
             </div>
