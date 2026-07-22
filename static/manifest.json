@@ -2,7 +2,7 @@
   "name": "Toko Jago Damri",
   "short_name": "Jago Damri",
   "description": "Sistem Kasir (POS) Toko Jago Damri",
-  "start_url": "/dashboard",
+  "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#f97316",
