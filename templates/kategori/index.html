@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+
+{% block title %}Manajemen Kategori - Toko Jago Damri{% endblock %}
+
+{% block content %}
+<div class="mb-6">
+    <h1 class="text-2xl font-bold text-gray-900">Manajemen Kategori</h1>
+    <p class="text-sm text-gray-500 mt-1">Kelola daftar kategori barang untuk toko Anda.</p>
+</div>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    {% for category, message in messages %}
+    <div class="mb-4 rounded-md p-4 {% if category == 'error' %}bg-red-50 text-red-800{% else %}bg-green-50 text-green-800{% endif %}">
+      <div class="flex">
+        <div class="flex-shrink-0">
+          {% if category == 'error' %}
+            <i data-lucide="alert-circle" class="h-5 w-5 text-red-400"></i>
+          {% else %}
+            <i data-lucide="check-circle" class="h-5 w-5 text-green-400"></i>
+          {% endif %}
+        </div>
+        <div class="ml-3">
+          <h3 class="text-sm font-medium">{{ message }}</h3>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
+
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <!-- Form Tambah Kategori -->
+    <div class="md:col-span-1">
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <h2 class="text-lg font-bold text-gray-900 mb-4 border-b pb-2">Tambah Kategori</h2>
+            <form action="{{ url_for('kategori.tambah') }}" method="POST">
+                <div class="mb-4">
+                    <label for="nama" class="block text-sm font-medium text-gray-700 mb-1">Nama Kategori</label>
+                    <input type="text" id="nama" name="nama" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-primary-500 focus:border-primary-500" placeholder="Misal: Sembako">
+                </div>
+                <button type="submit" class="w-full flex justify-center items-center py-2 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-primary-500 hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors">
+                    <i data-lucide="plus" class="w-4 h-4 mr-2"></i>
+                    Simpan Kategori
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Daftar Kategori -->
+    <div class="md:col-span-2">
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+            <div class="p-4 border-b bg-gray-50 flex justify-between items-center">
+                <h2 class="text-lg font-bold text-gray-900">Daftar Kategori</h2>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-white">
+                        <tr>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama Kategori</th>
+                            <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Jumlah Barang</th>
+                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        {% for kat in kategori_list %}
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ loop.index }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ kat.nama }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                    {{ kat.barang_list|length }} barang
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                <form action="{{ url_for('kategori.hapus', id=kat.id) }}" method="POST" class="inline" onsubmit="return confirm('Apakah Anda yakin ingin menghapus kategori ini?');">
+                                    <button type="submit" class="text-red-600 hover:text-red-900" title="Hapus">
+                                        <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="4" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
+                                Belum ada kategori yang ditambahkan.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -201,10 +201,44 @@
                 this.payment = current + amount;
             },
 
-            processTransaction() {
-                alert('Transaksi Berhasil!\n\nKembalian: ' + this.formatCurrency(this.change));
-                this.cart = [];
-                this.payment = '';
+            async processTransaction() {
+                try {
+                    const cartData = this.cart.map(item => ({
+                        id: item.id,
+                        qty: item.qty,
+                        price: item.price,
+                        subtotal: item.price * item.qty
+                    }));
+
+                    const payload = {
+                        cart: cartData,
+                        total: this.total,
+                        payment: parseFloat(this.payment),
+                        change: this.change
+                    };
+
+                    const response = await fetch('/api/checkout', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(payload)
+                    });
+
+                    const result = await response.json();
+
+                    if (result.success) {
+                        alert(`Transaksi Berhasil!\nNo Invoice: ${result.invoice}\nKembalian: ${this.formatCurrency(this.change)}`);
+                        this.cart = [];
+                        this.payment = '';
+                        this.init(); // Refresh data produk (stok berkurang)
+                    } else {
+                        alert('Gagal: ' + result.message);
+                    }
+                } catch (error) {
+                    console.error('Error saat checkout:', error);
+                    alert('Terjadi kesalahan sistem saat memproses transaksi.');
+                }
             },
 
             formatCurrency(value) {

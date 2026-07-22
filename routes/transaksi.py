@@ -27,8 +27,69 @@ def api_barang():
         })
     return jsonify(hasil)
 
-# Placeholder untuk route riwayat
+import uuid
+
+@transaksi_bp.route('/api/checkout', methods=['POST'])
+@login_required
+def checkout():
+    data = request.json
+    cart = data.get('cart', [])
+    total = data.get('total', 0)
+    bayar = data.get('payment', 0)
+    kembalian = data.get('change', 0)
+
+    if not cart:
+        return jsonify({'success': False, 'message': 'Keranjang kosong'}), 400
+
+    # Buat invoice unik
+    invoice_no = f"INV-{datetime.now().strftime('%Y%m%d%H%M%S')}-{str(uuid.uuid4())[:4].upper()}"
+
+    transaksi = Transaksi(
+        no_invoice=invoice_no,
+        user_id=current_user.id,
+        total=total,
+        bayar=bayar,
+        kembalian=kembalian
+    )
+    db.session.add(transaksi)
+    db.session.flush() # Agar mendapatkan ID transaksi
+
+    for item in cart:
+        barang_id = item.get('id')
+        qty = item.get('qty')
+        harga_satuan = item.get('price')
+        subtotal = item.get('subtotal')
+
+        detail = TransaksiDetail(
+            transaksi_id=transaksi.id,
+            barang_id=barang_id,
+            qty=qty,
+            harga_satuan=harga_satuan,
+            subtotal=subtotal
+        )
+        db.session.add(detail)
+
+        # Potong stok barang
+        barang = Barang.query.get(barang_id)
+        if barang:
+            barang.stok -= qty
+
+    db.session.commit()
+    return jsonify({
+        'success': True,
+        'message': 'Transaksi berhasil disimpan',
+        'invoice': invoice_no
+    })
+
 @transaksi_bp.route('/riwayat')
 @login_required
 def riwayat():
-    return "Halaman Riwayat Transaksi"
+    # Mengambil transaksi terbaru, diurutkan dari yang paling baru
+    daftar_transaksi = Transaksi.query.order_by(Transaksi.created_at.desc()).all()
+    return render_template('transaksi/riwayat.html', riwayat=daftar_transaksi)
+
+@transaksi_bp.route('/riwayat/<int:id>')
+@login_required
+def riwayat_detail(id):
+    transaksi = Transaksi.query.get_or_404(id)
+    return render_template('transaksi/detail.html', transaksi=transaksi)

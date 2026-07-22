@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+
+{% block title %}Detail Transaksi {{ transaksi.no_invoice }} - Toko Jago Damri{% endblock %}
+
+{% block content %}
+<div class="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+    <div>
+        <h1 class="text-2xl font-bold text-gray-900">Detail Transaksi</h1>
+        <p class="text-sm text-gray-500 mt-1">Invoice: {{ transaksi.no_invoice }}</p>
+    </div>
+    <div class="flex gap-2">
+        <a href="{{ url_for('transaksi.riwayat') }}" class="inline-flex items-center justify-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
+            <i data-lucide="arrow-left" class="w-4 h-4 mr-2"></i>
+            Kembali
+        </a>
+        <button onclick="window.print()" class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-primary-500 hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
+            <i data-lucide="printer" class="w-4 h-4 mr-2"></i>
+            Cetak Struk
+        </button>
+    </div>
+</div>
+
+<div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden max-w-3xl" id="printable-area">
+    <div class="p-8">
+        <div class="flex justify-between items-start border-b border-gray-200 pb-6 mb-6">
+            <div>
+                <h2 class="text-2xl font-bold text-gray-900 mb-1">TOKO JAGO DAMRI</h2>
+                <p class="text-sm text-gray-500">Jl. Contoh Alamat No. 123, Kota</p>
+                <p class="text-sm text-gray-500">Telp: 0812-3456-7890</p>
+            </div>
+            <div class="text-right">
+                <p class="text-sm font-bold text-gray-900">{{ transaksi.no_invoice }}</p>
+                <p class="text-sm text-gray-500">{{ transaksi.created_at.strftime('%d %B %Y, %H:%M') }}</p>
+                <p class="text-sm text-gray-500 mt-1">Kasir: <span class="font-medium text-gray-900">{{ transaksi.kasir.nama_lengkap }}</span></p>
+            </div>
+        </div>
+
+        <table class="w-full text-left mb-6">
+            <thead>
+                <tr class="border-b border-gray-200">
+                    <th class="py-2 text-sm font-bold text-gray-900">Barang</th>
+                    <th class="py-2 text-sm font-bold text-gray-900 text-center">Qty</th>
+                    <th class="py-2 text-sm font-bold text-gray-900 text-right">Harga</th>
+                    <th class="py-2 text-sm font-bold text-gray-900 text-right">Subtotal</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100">
+                {% for detail in transaksi.details %}
+                <tr>
+                    <td class="py-3 text-sm text-gray-900">{{ detail.barang.nama }}</td>
+                    <td class="py-3 text-sm text-gray-900 text-center">{{ detail.qty }}</td>
+                    <td class="py-3 text-sm text-gray-500 text-right">Rp {{ "{:,.0f}".format(detail.harga_satuan).replace(',', '.') }}</td>
+                    <td class="py-3 text-sm font-medium text-gray-900 text-right">Rp {{ "{:,.0f}".format(detail.subtotal).replace(',', '.') }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <div class="border-t border-gray-200 pt-4 w-full md:w-1/2 ml-auto">
+            <div class="flex justify-between items-center mb-2">
+                <span class="text-sm text-gray-500">Total Belanja</span>
+                <span class="text-sm font-bold text-gray-900">Rp {{ "{:,.0f}".format(transaksi.total).replace(',', '.') }}</span>
+            </div>
+            <div class="flex justify-between items-center mb-2">
+                <span class="text-sm text-gray-500">Tunai</span>
+                <span class="text-sm font-medium text-gray-900">Rp {{ "{:,.0f}".format(transaksi.bayar).replace(',', '.') }}</span>
+            </div>
+            <div class="flex justify-between items-center pt-2 border-t border-gray-100 mt-2">
+                <span class="text-sm font-bold text-gray-900">Kembalian</span>
+                <span class="text-sm font-bold text-gray-900">Rp {{ "{:,.0f}".format(transaksi.kembalian).replace(',', '.') }}</span>
+            </div>
+        </div>
+
+        <div class="mt-12 text-center text-sm text-gray-500 border-t border-gray-100 pt-6">
+            <p>Terima kasih atas kunjungan Anda!</p>
+            <p>Barang yang sudah dibeli tidak dapat ditukar/dikembalikan.</p>
+        </div>
+    </div>
+</div>
+
+<style>
+@media print {
+    body * {
+        visibility: hidden;
+    }
+    #printable-area, #printable-area * {
+        visibility: visible;
+    }
+    #printable-area {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        box-shadow: none;
+        border: none;
+    }
+}
+</style>
+{% endblock %}
