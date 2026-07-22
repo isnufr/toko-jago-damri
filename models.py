@@ -29,8 +29,22 @@ class Barang(db.Model):
     harga_jual = db.Column(db.Integer, nullable=False, default=0)
     stok = db.Column(db.Integer, nullable=False, default=0)
     stok_min = db.Column(db.Integer, nullable=False, default=5)
+    expired_date = db.Column(db.Date, nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    @property
+    def is_expired(self):
+        if not self.expired_date:
+            return False
+        return self.expired_date <= datetime.now().date()
+        
+    @property
+    def is_expiring(self):
+        if not self.expired_date:
+            return False
+        from datetime import timedelta
+        return self.expired_date <= (datetime.now().date() + timedelta(days=30)) and not self.is_expired
 
 class Transaksi(db.Model):
     __tablename__ = 'transaksi'

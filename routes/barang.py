@@ -2,6 +2,7 @@ from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import login_required
 from models import Barang, Kategori
 from database import db
+from datetime import datetime
 
 barang_bp = Blueprint('barang', __name__)
 
@@ -36,6 +37,9 @@ def tambah():
         harga_jual = request.form.get('harga_jual', type=int)
         stok = request.form.get('stok', type=int)
         stok_min = request.form.get('stok_min', type=int)
+        expired_date_str = request.form.get('expired_date')
+        
+        expired_date = datetime.strptime(expired_date_str, '%Y-%m-%d').date() if expired_date_str else None
 
         # Cek kode unik
         if Barang.query.filter_by(kode=kode).first():
@@ -45,7 +49,7 @@ def tambah():
         barang_baru = Barang(
             kode=kode, nama=nama, kategori_id=kategori_id,
             harga_beli=harga_beli, harga_jual=harga_jual,
-            stok=stok, stok_min=stok_min
+            stok=stok, stok_min=stok_min, expired_date=expired_date
         )
         db.session.add(barang_baru)
         db.session.commit()
@@ -73,6 +77,9 @@ def edit(id):
         barang.harga_jual = request.form.get('harga_jual', type=int)
         barang.stok = request.form.get('stok', type=int)
         barang.stok_min = request.form.get('stok_min', type=int)
+        
+        expired_date_str = request.form.get('expired_date')
+        barang.expired_date = datetime.strptime(expired_date_str, '%Y-%m-%d').date() if expired_date_str else None
 
         db.session.commit()
         flash('Data barang berhasil diperbarui.', 'success')

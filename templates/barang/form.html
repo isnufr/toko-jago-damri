@@ -101,6 +101,14 @@
                     <input type="number" name="stok_min" id="stok_min" value="{{ barang.stok_min if barang else '5' }}" required min="0" class="shadow-sm focus:ring-primary-500 focus:border-primary-500 block w-full sm:text-sm border-gray-300 rounded-md border px-3 py-2">
                 </div>
             </div>
+
+            <div class="sm:col-span-3">
+                <label for="expired_date" class="block text-sm font-medium text-gray-700">Tgl Kadaluarsa (Opsional)</label>
+                <div class="mt-1">
+                    <input type="date" name="expired_date" id="expired_date" value="{{ barang.expired_date.strftime('%Y-%m-%d') if barang and barang.expired_date else '' }}" class="shadow-sm focus:ring-primary-500 focus:border-primary-500 block w-full sm:text-sm border-gray-300 rounded-md border px-3 py-2">
+                </div>
+                <p class="mt-1 text-xs text-gray-500">Kosongkan jika barang tidak punya masa expired.</p>
+            </div>
             
         </div>
 

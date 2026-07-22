@@ -9,6 +9,15 @@ def seed_data():
         print("Memeriksa struktur database...")
         db.create_all()
 
+        # Coba tambahkan kolom expired_date (migrasi sederhana)
+        try:
+            db.session.execute(db.text('ALTER TABLE barang ADD COLUMN expired_date DATE;'))
+            db.session.commit()
+            print("Berhasil menambahkan kolom expired_date ke tabel barang.")
+        except Exception:
+            db.session.rollback()
+            print("Kolom expired_date sudah ada atau tidak bisa ditambahkan.")
+
         # Cek apakah sudah ada user (admin/kasir) di database, jika ada berarti sudah pernah disetup
         if User.query.first():
             print("Database sudah berisi data pengguna, melewati proses reset awal.")
