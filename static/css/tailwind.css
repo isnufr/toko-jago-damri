@@ -1,0 +1,49 @@
+/* 
+  Custom CSS yang tidak tercover oleh utility Tailwind
+  Sebagian besar styling sudah dihandle Tailwind CSS via CDN di base.html
+*/
+
+@media print {
+    /* Hide everything by default when printing */
+    body * {
+        visibility: hidden;
+    }
+    
+    /* Only show the print area */
+    #print-area, #print-area * {
+        visibility: visible;
+    }
+    
+    #print-area {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+    }
+
+    /* Print settings for thermal printer or label */
+    @page {
+        margin: 0;
+        /* Size can be adjusted for specific thermal printers (e.g. 58mm width) */
+        /* size: 58mm auto; */
+    }
+}
+
+/* Custom scrollbar for webkit */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
