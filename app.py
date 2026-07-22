@@ -28,6 +28,7 @@ from routes.transaksi import transaksi_bp
 from routes.kategori import kategori_bp
 from routes.printout import printout_bp
 from routes.laporan import laporan_bp
+from routes.user import user_bp
 
 app.register_blueprint(auth_bp)
 app.register_blueprint(dashboard_bp)
@@ -36,6 +37,7 @@ app.register_blueprint(transaksi_bp)
 app.register_blueprint(kategori_bp)
 app.register_blueprint(printout_bp)
 app.register_blueprint(laporan_bp)
+app.register_blueprint(user_bp)
 
 # Inisialisasi database jika dijalankan secara langsung
 with app.app_context():

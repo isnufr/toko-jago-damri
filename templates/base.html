@@ -95,6 +95,13 @@
                         <i data-lucide="tags" class="mr-3 h-5 w-5 text-gray-400 group-hover:text-primary-500"></i>
                         Kategori
                     </a>
+                    
+                    {% if current_user.is_authenticated and current_user.role == 'owner' %}
+                    <a href="{{ url_for('user.index') }}" class="group flex items-center px-3 py-2 text-sm font-medium rounded-lg text-gray-700 hover:bg-primary-50 hover:text-primary-600 transition-colors">
+                        <i data-lucide="users" class="mr-3 h-5 w-5 text-gray-400 group-hover:text-primary-500"></i>
+                        Data Pengguna
+                    </a>
+                    {% endif %}
                 </div>
 
                 <div class="pt-4 mt-4 border-t border-gray-100">
