@@ -17,7 +17,7 @@
         </div>
         <div>
             <p class="text-sm font-medium text-gray-500">Penjualan Hari Ini</p>
-            <p class="text-2xl font-bold text-gray-900">Rp 1.250.000</p>
+            <p class="text-2xl font-bold text-gray-900">Rp {{ "{:,}".format(total_penjualan).replace(',','.') }}</p>
         </div>
     </div>
 
@@ -28,7 +28,7 @@
         </div>
         <div>
             <p class="text-sm font-medium text-gray-500">Total Transaksi</p>
-            <p class="text-2xl font-bold text-gray-900">42</p>
+            <p class="text-2xl font-bold text-gray-900">{{ total_transaksi }}</p>
         </div>
     </div>
 
@@ -39,7 +39,7 @@
         </div>
         <div>
             <p class="text-sm font-medium text-gray-500">Total Item Terjual</p>
-            <p class="text-2xl font-bold text-gray-900">128</p>
+            <p class="text-2xl font-bold text-gray-900">{{ total_item }}</p>
         </div>
     </div>
 
@@ -50,7 +50,7 @@
         </div>
         <div>
             <p class="text-sm font-medium text-gray-500">Stok Menipis</p>
-            <p class="text-2xl font-bold text-gray-900">5 <span class="text-sm font-normal text-gray-500">barang</span></p>
+            <p class="text-2xl font-bold text-gray-900">{{ stok_menipis }} <span class="text-sm font-normal text-gray-500">barang</span></p>
         </div>
     </div>
 </div>
@@ -61,7 +61,7 @@
         <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
             <h2 class="text-lg font-bold text-gray-900 mb-4 border-b pb-2">Jalan Pintas</h2>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <a href="/pos" class="flex flex-col items-center justify-center p-6 bg-primary-50 rounded-xl border-2 border-transparent hover:border-primary-500 transition-colors group cursor-pointer text-center">
+                <a href="{{ url_for('transaksi.pos') }}" class="flex flex-col items-center justify-center p-6 bg-primary-50 rounded-xl border-2 border-transparent hover:border-primary-500 transition-colors group cursor-pointer text-center">
                     <div class="w-12 h-12 bg-primary-100 text-primary-600 rounded-full flex items-center justify-center mb-3 group-hover:bg-primary-500 group-hover:text-white transition-colors">
                         <i data-lucide="shopping-cart" class="w-6 h-6"></i>
                     </div>
@@ -69,7 +69,7 @@
                     <p class="text-sm text-gray-500 mt-1">Mulai transaksi penjualan baru</p>
                 </a>
                 
-                <a href="/barang" class="flex flex-col items-center justify-center p-6 bg-gray-50 rounded-xl border-2 border-transparent hover:border-gray-300 transition-colors group cursor-pointer text-center">
+                <a href="{{ url_for('barang.tambah') }}" class="flex flex-col items-center justify-center p-6 bg-gray-50 rounded-xl border-2 border-transparent hover:border-gray-300 transition-colors group cursor-pointer text-center">
                     <div class="w-12 h-12 bg-white border border-gray-200 text-gray-600 rounded-full flex items-center justify-center mb-3 group-hover:bg-white group-hover:text-gray-900 transition-colors">
                         <i data-lucide="plus" class="w-6 h-6"></i>
                     </div>
@@ -85,38 +85,24 @@
         <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 h-full flex flex-col">
             <h2 class="text-lg font-bold text-gray-900 mb-4 border-b pb-2 flex items-center justify-between">
                 <span>Peringatan Stok</span>
-                <span class="bg-red-100 text-red-600 text-xs font-bold px-2 py-1 rounded-full">5</span>
+                <span class="bg-red-100 text-red-600 text-xs font-bold px-2 py-1 rounded-full">{{ stok_menipis }}</span>
             </h2>
             
             <div class="flex-1 overflow-y-auto pr-2">
                 <ul class="space-y-4">
+                    {% for barang in barang_menipis %}
                     <li class="flex items-start">
                         <div class="bg-red-50 p-2 rounded-lg mr-3">
                             <i data-lucide="package-minus" class="w-5 h-5 text-red-500"></i>
                         </div>
                         <div>
-                            <p class="text-sm font-medium text-gray-900">Minyak Goreng Bimoli 2L</p>
-                            <p class="text-xs text-red-500 font-semibold mt-0.5">Sisa: 2 pcs (Min. 5)</p>
+                            <p class="text-sm font-medium text-gray-900">{{ barang.nama }}</p>
+                            <p class="text-xs text-red-500 font-semibold mt-0.5">Sisa: {{ barang.stok }} pcs (Min. {{ barang.stok_min }})</p>
                         </div>
                     </li>
-                    <li class="flex items-start">
-                        <div class="bg-red-50 p-2 rounded-lg mr-3">
-                            <i data-lucide="package-minus" class="w-5 h-5 text-red-500"></i>
-                        </div>
-                        <div>
-                            <p class="text-sm font-medium text-gray-900">Gula Pasir Gulaku 1kg</p>
-                            <p class="text-xs text-red-500 font-semibold mt-0.5">Sisa: 4 pcs (Min. 10)</p>
-                        </div>
-                    </li>
-                    <li class="flex items-start">
-                        <div class="bg-red-50 p-2 rounded-lg mr-3">
-                            <i data-lucide="package-minus" class="w-5 h-5 text-red-500"></i>
-                        </div>
-                        <div>
-                            <p class="text-sm font-medium text-gray-900">Indomie Goreng</p>
-                            <p class="text-xs text-red-500 font-semibold mt-0.5">Sisa: 8 pcs (Min. 40)</p>
-                        </div>
-                    </li>
+                    {% else %}
+                    <li class="text-sm text-gray-500">Stok barang aman.</li>
+                    {% endfor %}
                 </ul>
             </div>
             

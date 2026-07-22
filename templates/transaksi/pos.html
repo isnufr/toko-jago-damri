@@ -128,16 +128,16 @@
             searchQuery: '',
             cart: [],
             payment: '',
-            
-            // Dummy Data untuk Mockup
-            products: [
-                { id: 1, sku: '8999999012345', name: 'Minyak Goreng Bimoli 2L', price: 35000, stock: 12 },
-                { id: 2, sku: 'BRG0001', name: 'Beras Rojolele 5kg', price: 75000, stock: 15 },
-                { id: 3, sku: '8991234567890', name: 'Indomie Goreng', price: 3000, stock: 45 },
-                { id: 4, sku: '8990987654321', name: 'Gula Pasir Gulaku 1kg', price: 16500, stock: 20 },
-                { id: 5, sku: '8994567123890', name: 'Kopi Kapal Api 165g', price: 14000, stock: 30 },
-                { id: 6, sku: '8993216549870', name: 'Teh Celup Sosro', price: 6500, stock: 25 },
-            ],
+            products: [],
+
+            init() {
+                fetch('/api/barang')
+                    .then(response => response.json())
+                    .then(data => {
+                        this.products = data;
+                    })
+                    .catch(err => console.error("Error fetching barang:", err));
+            },
 
             get filteredProducts() {
                 if (this.searchQuery === '') {

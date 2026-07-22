@@ -55,48 +55,29 @@
                 </tr>
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
-                <!-- Row 1 -->
+                {% for barang in list_barang %}
                 <tr class="hover:bg-gray-50 transition-colors">
-                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">8999999012345</td>
-                    <td class="px-6 py-4 text-sm text-gray-900">Minyak Goreng Bimoli 2L</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ barang.kode }}</td>
+                    <td class="px-6 py-4 text-sm text-gray-900">{{ barang.nama }}</td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                         <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                            Sembako
+                            {{ barang.kategori.nama if barang.kategori else 'Tanpa Kategori' }}
                         </span>
                     </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right">Rp 35.000</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right">Rp {{ "{:,}".format(barang.harga_jual).replace(',','.') }}</td>
                     <td class="px-6 py-4 whitespace-nowrap text-center">
+                        {% if barang.stok <= barang.stok_min %}
                         <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
-                            2 (Min. 5)
+                            {{ barang.stok }} (Min. {{ barang.stok_min }})
                         </span>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                        <a href="/barang/edit/1" class="text-primary-600 hover:text-primary-900 mx-1" title="Edit">
-                            <i data-lucide="edit-2" class="w-4 h-4 inline"></i>
-                        </a>
-                        <button class="text-red-600 hover:text-red-900 mx-1" title="Hapus">
-                            <i data-lucide="trash-2" class="w-4 h-4 inline"></i>
-                        </button>
-                    </td>
-                </tr>
-                
-                <!-- Row 2 -->
-                <tr class="hover:bg-gray-50 transition-colors">
-                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">BRG0001</td>
-                    <td class="px-6 py-4 text-sm text-gray-900">Beras Rojolele 5kg</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                            Sembako
-                        </span>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right">Rp 75.000</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-center">
+                        {% else %}
                         <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                            15
+                            {{ barang.stok }}
                         </span>
+                        {% endif %}
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                        <a href="/barang/edit/2" class="text-primary-600 hover:text-primary-900 mx-1" title="Edit">
+                        <a href="{{ url_for('barang.edit', id=barang.id) }}" class="text-primary-600 hover:text-primary-900 mx-1" title="Edit">
                             <i data-lucide="edit-2" class="w-4 h-4 inline"></i>
                         </a>
                         <button class="text-red-600 hover:text-red-900 mx-1" title="Hapus">
@@ -104,6 +85,11 @@
                         </button>
                     </td>
                 </tr>
+                {% else %}
+                <tr>
+                    <td colspan="6" class="px-6 py-4 text-center text-sm text-gray-500">Belum ada data barang.</td>
+                </tr>
+                {% endfor %}
             </tbody>
         </table>
     </div>
